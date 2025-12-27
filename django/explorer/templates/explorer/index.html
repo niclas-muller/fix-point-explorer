@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>My test page</title>
+  </head>
+  <body>
+    <p>These are the known functions:</p>
+
+    <ul>
+    {% for function in function_list %}
+        <li><a href="/{{ function.id }}/">{{ function.function_string }}</a></li>
+    {% endfor %}
+    </ul>
+  </body>
+</html>
