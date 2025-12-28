@@ -4,7 +4,7 @@ from django.db import models
 class Function(models.Model):
     "Mapping from function definition string (sympifyable) to function ID."
 
-    function_string = models.CharField()
+    function_string = models.CharField(unique=True)
 
     def __str__(self) -> str:
         return self.function_string
