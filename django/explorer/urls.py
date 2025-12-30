@@ -5,5 +5,5 @@ from . import views
 app_name = "explorer"
 urlpatterns = [
     path("", views.index, name="index"),
-    path("<int:function_id>/", views.function, name="function"),
+    path("<int:function_id>/", views.detail, name="detail"),
 ]

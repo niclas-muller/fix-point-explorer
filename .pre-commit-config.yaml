@@ -37,3 +37,21 @@ repos:
         args: [--strict, --ignore-missing-imports]
         additional_dependencies:
         - django-stubs
+        - tailwind
+        - django_browser_reload
+        - sympy
+
+-   repo: https://github.com/djlint/djLint
+    rev: v1.36.4
+    hooks:
+      - id: djlint-reformat-django
+      - id: djlint-django
+
+-   repo: local
+    hooks:
+      - id: django-test
+        name: django-test
+        entry: python django/manage.py test
+        always_run: true
+        pass_filenames: false
+        language: system

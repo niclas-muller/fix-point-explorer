@@ -1,0 +1,21 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="keywords" content="">
+        <meta name="description" content="">
+        <title>
+            {% block pagetitle %}
+            {% endblock pagetitle %}
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=0.8">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {% tailwind_css %}
+    </head>
+    <body class="bg-green-50 text-black monospace leading-normal tracking-normal">
+        <h1 class="text-center font-bold text-4xl p-3">Explorer</h1>
+        {% block content %}
+        {% endblock content %}
+    </body>
+</html>

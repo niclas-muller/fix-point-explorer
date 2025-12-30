@@ -1,26 +1,25 @@
-<!doctype html>
-<html lang="en-US">
-  <head>
-    <meta charset="utf-8" />
-    <title>Explorer</title>
-  </head>
-  <body>
-      {% if message %}
-      <script> alert('{{ message }}'); </script>
-      {% endif %}
-    <p>These are the known functions:</p>
-
-    <ul>
-    {% for function in function_list %}
-        <li><a href="/{{ function.id }}/">{{ function.function_string }}</a></li>
-    {% endfor %}
-    </ul>
-
-    <p> Create new function: </p>
-    <form method="post">
-    {% csrf_token %}
-        <input type="text" name="function_string" value="">
-        <input type="submit" value="Submit">
-    </form>
-  </body>
-</html>
+{% extends "./base.html" %}"
+{% block pagetitle %}
+    Explorer
+{% endblock pagetitle %}
+{% block content %}
+    <div class="grid mx-auto justify-center">
+        {% if message %}<script> alert('{{ message }}'); </script>{% endif %}
+        <p>These are the known functions:</p>
+        <ul class="list-disc">
+            {% for function in function_list %}
+                <li>
+                    <a href="{% url 'explorer:detail' function_id=function.id %}">{{ function.function_string }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <p>Create new function:</p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="function_string" value="" class="bg-white">
+            <input type="submit"
+                   value="Submit"
+                   class="font-bold hover:bg-white hover:cursor-pointer">
+        </form>
+    </div>
+{% endblock content %}

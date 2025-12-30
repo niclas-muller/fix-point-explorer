@@ -1,0 +1,8 @@
+{% extends "./base.html" %}"
+{% block pagetitle %}
+    Function details
+{% endblock pagetitle %}
+{% block content %}
+    <a href={% url "explorer:index" %}>Back to the overview</a>
+    <p>You are looking at function "{{ function.function_string }}"</p>
+{% endblock content %}

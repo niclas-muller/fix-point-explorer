@@ -1,3 +1,4 @@
 env/
 mypy.ini
 *.pyc
+django/Procfile.tailwind
