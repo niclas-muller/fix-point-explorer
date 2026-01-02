@@ -17,6 +17,8 @@ ALLOWED_HOSTS: list[str] = []
 
 TAILWIND_APP_NAME = "theme"
 
+MATHJAX_ENABLED = True
+
 
 # Application definition
 
@@ -30,6 +32,7 @@ INSTALLED_APPS = [
     "explorer.apps.ExplorerConfig",
     "tailwind",
     "theme",
+    "django_mathjax",
 ]
 
 if DEBUG:

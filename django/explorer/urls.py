@@ -1,9 +1,9 @@
 from django.urls import path
 
-from . import views
+from explorer.views import IndexView, DetailView
 
 app_name = "explorer"
 urlpatterns = [
-    path("", views.index, name="index"),
-    path("<int:function_id>/", views.detail, name="detail"),
+    path("", IndexView.as_view(), name="index"),
+    path("<int:function_id>/", DetailView.as_view(), name="detail"),
 ]

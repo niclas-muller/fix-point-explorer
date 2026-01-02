@@ -1,8 +1,18 @@
+from typing import Callable
+import re
+
 from django.db import models
 from django.core.exceptions import ValidationError
 
+from sympy.core import Expr
 from sympy.parsing.sympy_parser import parse_expr
 from tokenize import TokenError
+from sympy.abc import x, y, z
+from sympy import lambdify, latex
+
+ALLOWED_FUNCTION_ARGS = [x, y, z]
+PREFERRED_FUNCTION_ARG = z
+CONSTANT_SYMBOL_PATTERN = re.compile(r"^c\d+$")
 
 
 class Function(models.Model):
@@ -10,14 +20,10 @@ class Function(models.Model):
 
     @classmethod
     def create(cls, function_string: str) -> "Function":
-        # Clean the string (all lowercase, no blanks allowed):
+        # Clean the string (all lowercase, no blanks allowed)
         function_string = function_string.lower().replace(" ", "")
 
-        # Test for uniqueness:
-        if function_string in cls.objects.values_list("function_string", flat=True):
-            raise ValidationError(f"Function {function_string} already defined.")
-
-        # Raise if string cannot be parsed into sympy expression:
+        # Raise if string cannot be parsed into sympy expression
         try:
             expr = parse_expr(function_string)
         except (SyntaxError, TokenError):
@@ -25,13 +31,69 @@ class Function(models.Model):
                 f"Function {function_string} cannot be parsed.", code="invalid"
             )
 
-        # Raise if parsed expression has more than one unknown:
-        if len(expr.free_symbols) != 1:
+        # Make sure that expr is of type Expression
+        # (handles subtle bugs such as Ellipsis not being converted to sympy
+        if not isinstance(expr, Expr):
             raise ValidationError(
-                f"Function {function_string} has more than one variable."
+                f"Function {function_string} cannot be parsed.", code="invalid"
             )
 
+        # Check that free_symbols are only sourced from allowed values
+        # free_symbols *must* contain exactly one of [x,y,z] and can contain {c_i}
+        symbols = expr.free_symbols
+        functional_symbols = [
+            symbol for symbol in symbols if symbol in ALLOWED_FUNCTION_ARGS
+        ]
+        other_symbols = symbols - set(functional_symbols)
+        if len(functional_symbols) != 1:
+            raise ValidationError(
+                f"Arguments {functional_symbols} do not match requirements (use exactly one of x, y or z)."
+            )
+
+        for symbol in other_symbols:
+            match = CONSTANT_SYMBOL_PATTERN.match(str(symbol))
+            if not match:
+                raise ValidationError(
+                    f"Parameter {symbol} does not match requirements (use c1, c2, ...)."
+                )
+
+        # Rename functional symbol to z
+        expr = expr.subs(functional_symbols[0], z)
+        function_string = str(expr)
+
+        # Test for uniqueness:
+        if function_string in cls.objects.values_list("function_string", flat=True):
+            raise ValidationError(f"Function {function_string} already defined.")
+
         return cls(function_string=function_string)
+
+    @property
+    def as_expr(self) -> Expr:
+        return parse_expr(self.function_string)
+
+    @property
+    def parameter_names(self) -> set[str]:
+        return set(
+            [
+                str(symbol)
+                for symbol in self.as_expr.free_symbols
+                if CONSTANT_SYMBOL_PATTERN.match(str(symbol))
+            ]
+        )
+
+    def as_lambda(
+        self, parameters: dict[str, complex]
+    ) -> None | Callable[[complex], complex]:
+        if set(parameters.keys()) != self.parameter_names:
+            raise ValidationError("Did not provide values for all parameters.")
+        lambda_expr: Callable[[complex], complex] = lambdify(
+            z, self.as_expr.subs(parameters)
+        )
+        return lambda_expr
+
+    @property
+    def function_string_latex(self) -> str:
+        return f"$${latex(self.as_expr)}$$"
 
     def __str__(self) -> str:
         return self.function_string

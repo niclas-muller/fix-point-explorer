@@ -1,8 +1,35 @@
-{% extends "./base.html" %}"
+{% extends "./base.html" %}
 {% block pagetitle %}
     Function details
 {% endblock pagetitle %}
 {% block content %}
-    <a href={% url "explorer:index" %}>Back to the overview</a>
-    <p>You are looking at function "{{ function.function_string }}"</p>
+    <h2 class="text-center font-bold text-xl p-3">{{ function.function_string_latex }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for parameter in parameter_names %}
+            <div class="flex flex-row justify-center gap-4 p-2">
+                <div>
+                    <h3>{{ parameter }}:</h3>
+                </div>
+                <div>
+                    <input type="text"
+                           name="param:{{ parameter }}:real"
+                           value=""
+                           class="bg-white">
+                </div>
+                <div>
+                    <input type="text"
+                           name="param:{{ parameter }}:imag"
+                           value=""
+                           class="bg-white">
+                </div>
+            </div>
+        {% endfor %}
+        <div class="text-center p-2">
+            <input type="submit"
+                   value="Submit"
+                   class="font-bold text-white bg-indigo-400 hover:bg-white hover:text-indigo-400 hover:cursor-pointer hover:shadow-lg">
+        </div>
+    </form>
+    {{ image|safe }}
 {% endblock content %}

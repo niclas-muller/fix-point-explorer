@@ -3,23 +3,25 @@
     Explorer
 {% endblock pagetitle %}
 {% block content %}
-    <div class="grid mx-auto justify-center">
-        {% if message %}<script> alert('{{ message }}'); </script>{% endif %}
-        <p>These are the known functions:</p>
-        <ul class="list-disc">
+    <div class="grid mx-auto justify-center p-2">
+        <h2 class="text-center font-bold text-xl p-3">Known functions:</h2>
+        <div class="grid grid-cols-2 gap-4 p-2">
             {% for function in function_list %}
-                <li>
-                    <a href="{% url 'explorer:detail' function_id=function.id %}">{{ function.function_string }}</a>
-                </li>
+                <div class="p-1 hover:bg-white hover:shadow-lg outline-solid">
+                    <a href="{% url 'explorer:detail' function_id=function.id %}">{{ function.function_string_latex }}</a>
+                </div>
             {% endfor %}
-        </ul>
-        <p>Create new function:</p>
-        <form method="post">
-            {% csrf_token %}
-            <input type="text" name="function_string" value="" class="bg-white">
-            <input type="submit"
-                   value="Submit"
-                   class="font-bold hover:bg-white hover:cursor-pointer">
-        </form>
+        </div>
+        <hr class="m-2">
+        <div class="text-center">
+            <h3 class="font-bold text-xl">Create new function:</h3>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="function_string" value="" class="bg-white">
+                <input type="submit"
+                       value="Submit"
+                       class="font-bold text-white bg-indigo-400 hover:bg-white hover:text-indigo-400 hover:cursor-pointer hover:shadow-lg">
+            </form>
+        </div>
     </div>
 {% endblock content %}
